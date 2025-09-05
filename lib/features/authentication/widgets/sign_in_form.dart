@@ -62,7 +62,7 @@ class _SignInFormState extends State<SignInForm> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/profile');
               },
               child: Text('Sign In'),
             ),

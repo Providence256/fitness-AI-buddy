@@ -1,5 +1,6 @@
 import 'package:fitness_app/utility/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppTheme {
   AppTheme._();
@@ -15,6 +16,7 @@ class AppTheme {
     scaffoldBackgroundColor: Color(0xFFF5F7FA),
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       elevation: 0,
       iconTheme: IconThemeData(color: AppColors.textPrimary),
       titleTextStyle: TextStyle(
@@ -107,6 +109,7 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.darkBackground,
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,
+      systemOverlayStyle: SystemUiOverlayStyle.light,
       elevation: 0,
       iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(

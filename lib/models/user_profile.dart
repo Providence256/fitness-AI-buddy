@@ -8,7 +8,7 @@ class UserProfile {
   final double height;
   final Goal goal;
   final Level level;
-  final Stats stats;
+  final Stats? stats;
   final DateTime createdAt;
 
   UserProfile({
@@ -19,7 +19,7 @@ class UserProfile {
     required this.height,
     required this.goal,
     required this.level,
-    required this.stats,
+    this.stats,
     required this.createdAt,
   });
 }
