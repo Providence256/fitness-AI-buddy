@@ -1,7 +1,7 @@
-import 'package:fitness_app/features/history/history_screen.dart';
+import 'package:fitness_app/features/exercise/exercise_screen.dart';
 import 'package:fitness_app/features/home/home_screen.dart';
-import 'package:fitness_app/features/profile/profile_screen.dart';
 import 'package:fitness_app/features/progress/progress_screen.dart';
+import 'package:fitness_app/features/workout/workout_screen.dart';
 import 'package:fitness_app/utility/responsive_breakpoints.dart';
 import 'package:flutter/material.dart';
 
@@ -23,22 +23,22 @@ class _ResponsiveNavigationState extends State<ResponsiveNavigation> {
       page: HomeScreen(),
     ),
     AppDestination(
-      label: 'Progresss',
-      icon: Icons.bar_chart,
-      selectedIcon: Icons.bar_chart_outlined,
+      label: 'Exercises',
+      icon: Icons.dashboard_outlined,
+      selectedIcon: Icons.dashboard,
+      page: ExerciseScreen(),
+    ),
+    AppDestination(
+      label: 'Workouts',
+      icon: Icons.fitness_center_outlined,
+      selectedIcon: Icons.fitness_center,
+      page: WorkoutScreen(),
+    ),
+    AppDestination(
+      label: 'Progress',
+      icon: Icons.bar_chart_outlined,
+      selectedIcon: Icons.bar_chart,
       page: ProgressScreen(),
-    ),
-    AppDestination(
-      label: 'History',
-      icon: Icons.history_outlined,
-      selectedIcon: Icons.history,
-      page: HistoryScreen(),
-    ),
-    AppDestination(
-      label: 'Profile',
-      icon: Icons.person,
-      selectedIcon: Icons.person_outline,
-      page: ProfileScreen(),
     ),
   ];
 
