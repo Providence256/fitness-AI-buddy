@@ -43,7 +43,7 @@ class _AuthScreenState extends State<AuthScreen>
                 _buildTabBar(),
 
                 SizedBox(
-                  height: 260,
+                  height: MediaQuery.sizeOf(context).height * .37,
                   child: TabBarView(
                     controller: _tabController,
                     children: [
@@ -51,7 +51,10 @@ class _AuthScreenState extends State<AuthScreen>
                       SignInForm(),
 
                       // SignUp Form
-                      SignUpForm(),
+                      SignUpForm(
+                        onSignup: () =>
+                            Navigator.pushNamed(context, '/profile'),
+                      ),
                     ],
                   ),
                 ),

@@ -12,11 +12,14 @@ class ExerciseScreen extends StatefulWidget {
 }
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
-  final exercises = ExercisesDummyData().exercises;
+  final exercises = kExercises;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Exercises')),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('Exercises'),
+      ),
       body: SafeArea(
         child: Column(children: [Expanded(child: _buildExercisesList())]),
       ),
@@ -109,6 +112,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       builder: (context) => AlertDialog(
         title: Text(exercice.name),
         content: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(

@@ -75,8 +75,8 @@ class AppTheme {
         foregroundColor: Colors.white,
         backgroundColor: AppColors.primaryBlue,
         disabledForegroundColor: AppColors.textSecondary,
-        disabledBackgroundColor: AppColors.textPrimary,
-        side: BorderSide(color: AppColors.primaryBlue),
+        disabledBackgroundColor: AppColors.textSecondary.withValues(alpha: 0.5),
+
         padding: EdgeInsets.symmetric(vertical: 16),
         textStyle: TextStyle(
           fontSize: 16,
@@ -168,8 +168,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         backgroundColor: AppColors.primaryBlue,
         disabledForegroundColor: AppColors.textSecondary,
-        disabledBackgroundColor: AppColors.textPrimary,
-        side: BorderSide(color: AppColors.primaryBlue),
+        disabledBackgroundColor: AppColors.textSecondary.withValues(alpha: 0.5),
         padding: EdgeInsets.symmetric(vertical: 16),
         textStyle: TextStyle(
           fontSize: 16,
