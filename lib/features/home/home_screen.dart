@@ -1,6 +1,8 @@
+import 'package:fitness_app/features/profile/providers/profile_controller.dart';
 import 'package:fitness_app/utility/constants/app_colors.dart';
 import 'package:fitness_app/utility/responsive_breakpoints.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -33,44 +35,49 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      spacing: 4,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer(
+      builder: (context, ref, child) {
+        final user = ref.watch(currentUserProfileProvider);
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          spacing: 4,
           children: [
-            Text(
-              'Welcome back,',
-              style: Theme.of(context).textTheme.bodyMedium,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome back',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                Text(
+                  user.value!.name,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ],
             ),
-            Text(
-              'Providence Musaghi',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
-            ),
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Center(
-            child: Text(
-              'P',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.gradientStart, AppColors.gradientEnd],
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Center(
+                child: Text(
+                  user.value!.name[0].toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 

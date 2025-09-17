@@ -55,6 +55,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       child: Column(
         spacing: 12,
         children: [
+          SizedBox(height: 5),
           TextFormField(
             controller: _emailController,
             decoration: InputDecoration(
@@ -90,9 +91,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
               suffixIcon: Icon(Icons.visibility_off_outlined),
             ),
             validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'You have to confirm your password';
-              } else if (value != password) {
+              if (value != password) {
                 return 'Password does not match';
               }
               return null;

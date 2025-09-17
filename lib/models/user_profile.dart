@@ -1,26 +1,28 @@
+import 'package:fitness_app/models/exercise.dart';
 import 'package:fitness_app/models/stats.dart';
 
 class UserProfile {
   final String id;
-  final String userId;
   final String name;
   final int age;
   final double weight;
   final double height;
   final Goal goal;
   final Level level;
+  final List<Equipment> equipments;
   final Stats? stats;
+
   final DateTime createdAt;
 
   UserProfile({
     required this.id,
-    required this.userId,
     required this.name,
     required this.age,
     required this.weight,
     required this.height,
     required this.goal,
     required this.level,
+    required this.equipments,
     this.stats,
     required this.createdAt,
   });

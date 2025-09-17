@@ -1,9 +1,15 @@
 import 'package:fitness_app/utility/app_theme.dart';
 import 'package:fitness_app/utility/route_generator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //Initiliaze Gemini API
+  Gemini.init(apiKey: 'AIzaSyDbrb1OQnJSXpVKFPNc3HltDi4_HXdqrno');
+
   runApp(ProviderScope(child: const MyApp()));
 }
 

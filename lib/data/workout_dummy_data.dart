@@ -6,7 +6,6 @@ class WorkoutDummyData {
   final List<Workout> workoutTemplates = [
     Workout(
       id: 'template_1',
-      userId: 'user123',
       title: 'Push Day - Chest & Triceps',
       exercises: [
         Exercise(
@@ -54,7 +53,6 @@ class WorkoutDummyData {
     ),
     Workout(
       id: 'template_2',
-      userId: 'user123',
       title: 'Pull Day - Back & Biceps',
       exercises: [
         Exercise(
@@ -102,7 +100,6 @@ class WorkoutDummyData {
     ),
     Workout(
       id: 'template_3',
-      userId: 'user123',
       title: 'Leg Day',
       exercises: [
         Exercise(

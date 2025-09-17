@@ -1,32 +1,153 @@
-import 'package:fitness_app/data/exercises_dummy_data.dart';
+import 'package:fitness_app/features/exercise/data/exercise_repository.dart';
+import 'package:fitness_app/features/exercise/providers/exercise_provider.dart';
 import 'package:fitness_app/models/exercise.dart';
 import 'package:fitness_app/models/user_profile.dart';
 import 'package:fitness_app/utility/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExerciseScreen extends StatefulWidget {
+class ExerciseScreen extends ConsumerStatefulWidget {
   const ExerciseScreen({super.key});
 
   @override
-  State<ExerciseScreen> createState() => _ExerciseScreenState();
+  ConsumerState<ExerciseScreen> createState() => _ExerciseScreenState();
 }
 
-class _ExerciseScreenState extends State<ExerciseScreen> {
-  final exercises = kExercises;
+class _ExerciseScreenState extends ConsumerState<ExerciseScreen> {
   @override
   Widget build(BuildContext context) {
+    final exercises = ref.watch(exercisesListStreamProvider);
+    final selectedCategory = ref.watch(selectedCategoryProvider);
+
+    final filteredExercises = selectedCategory == null
+        ? exercises
+        : ref.watch(exerciseBycategoryProvider(selectedCategory));
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Exercises'),
+        centerTitle: false,
+        title: Text(
+          'Exercises',
+          style: Theme.of(context).textTheme.headlineLarge,
+        ),
       ),
       body: SafeArea(
-        child: Column(children: [Expanded(child: _buildExercisesList())]),
+        child: Column(
+          spacing: 15,
+          children: [
+            SizedBox(height: 10),
+            _buildCategoryList(),
+
+            filteredExercises.value!.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 190),
+                        Icon(
+                          Icons.fitness_center,
+                          size: 64,
+                          color: AppColors.textSecondary,
+                        ),
+                        Text(
+                          'No exercises found',
+                          style: Theme.of(context).textTheme.headlineMedium!
+                              .copyWith(color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                : Expanded(
+                    child: filteredExercises.when(
+                      data: (exercises) {
+                        return _buildExercisesList(exercises);
+                      },
+                      error: (error, stackTrace) =>
+                          Center(child: Text('Error: $error')),
+                      loading: () => Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildExercisesList() {
+  Widget _buildCategoryList() {
+    return Consumer(
+      builder: (BuildContext context, WidgetRef ref, Widget? child) {
+        final selectedCategory = ref.watch(selectedCategoryProvider);
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          height: 40,
+          child: ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            children: Category.values.map((category) {
+              final bool isSelected = selectedCategory == category;
+              return _buildCategoryChip(
+                label: _getCategoryName(category),
+                icon: _getcategoryIcon(category),
+                isSelected: isSelected,
+                onTap: () {
+                  if (isSelected) {
+                    ref.read(selectedCategoryProvider.notifier).state = null;
+                  } else {
+                    ref.read(selectedCategoryProvider.notifier).state =
+                        category;
+                  }
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCategoryChip({
+    required String label,
+    required IconData icon,
+    bool isSelected = false,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        margin: EdgeInsets.only(right: 12),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primaryBlue
+              : AppColors.primaryBlue.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          spacing: 6,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? Colors.white : AppColors.primaryBlue,
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : AppColors.primaryBlue,
+                fontWeight: isSelected ? FontWeight.bold : null,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExercisesList(List<Exercise> exercises) {
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 20),
       itemCount: exercises.length,

@@ -47,6 +47,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       key: _formKey,
       child: Column(
         children: [
+          SizedBox(height: 5),
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
