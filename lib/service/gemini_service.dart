@@ -1,15 +1,17 @@
 import 'dart:convert';
 
 import 'package:fitness_app/data/exercises_dummy_data.dart';
+import 'package:fitness_app/features/workout/providers/workout_controller.dart';
 import 'package:fitness_app/models/workout.dart';
 import 'package:fitness_app/models/workout_request.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GeminiService {
   static Gemini? _instance;
 
-  static void init() {
-    _instance = Gemini.instance;
+  static void init({required String apiKey}) {
+    _instance = Gemini.init(apiKey: apiKey);
   }
 
   static Gemini get instance {
@@ -26,12 +28,15 @@ class GeminiService {
 
       final response = await instance.prompt(parts: [Part.text(prompt)]);
 
+      print('genereted workout response is ${response!.output}');
+
       if (response!.output != null) {
         return _workoutResponse(response.output!);
       }
 
       return null;
     } catch (e) {
+      print('generated error is $e');
       return null;
     }
   }
@@ -45,10 +50,26 @@ class GeminiService {
            - weight: ${request.weight}
            - age: ${request.age}
            - available equipment: ${request.equipments}
-
-      Please respond only with valid JSON array of workouts matching this dart model: $Workout
+        Please respond ONLY with valid JSON array of workouts.  
+      Each workout object must have:
+      Please respond only with valid JSON array of workouts matching this dart model: 
+      - Workout (
+              id as String;
+               userId as String;
+               title;
+               List<Exercise> exercises;
+              DateTime date;
+          )   
       Ensure the workout is safe, effective, and appropriate for the specified fitness level
       ''';
+  }
+
+  static Future<bool> generateAndSaveWorkout(
+    WorkoutRequest request,
+    WidgetRef ref,
+  ) async {
+    final workoutController = ref.read(workoutControllerProvider.notifier);
+    return await workoutController.generateAndSaveWorkout(request);
   }
 
   static List<Workout> _workoutResponse(String output) {
@@ -59,6 +80,8 @@ class GeminiService {
 
     final dynamic decoded = jsonDecode(cleaned);
 
+    print('decoded is $decoded');
+
     if (decoded is List) {
       print('is List ${decoded.map((e) => Workout.fromMap(e)).toList()}');
       return decoded.map((e) => Workout.fromMap(e)).toList();
@@ -66,6 +89,7 @@ class GeminiService {
       print('is Map : ${Workout.fromMap(decoded)}');
       return [Workout.fromMap(decoded)];
     } else {
+      print('the error is here don\'t look further');
       throw Exception('Unexpected workout response format');
     }
   }

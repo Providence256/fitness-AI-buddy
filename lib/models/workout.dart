@@ -7,12 +7,14 @@ import 'package:fitness_app/models/exercise.dart';
 
 class Workout {
   final String id;
+  final String userId;
   final String title;
   final List<Exercise> exercises;
   final DateTime date;
 
   Workout({
     required this.id,
+    required this.userId,
     required this.title,
     required this.exercises,
     required this.date,
@@ -20,12 +22,14 @@ class Workout {
 
   Workout copyWith({
     String? id,
+    String? userId,
     String? title,
     List<Exercise>? exercises,
     DateTime? date,
   }) {
     return Workout(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       title: title ?? this.title,
       exercises: exercises ?? this.exercises,
       date: date ?? this.date,
@@ -35,6 +39,7 @@ class Workout {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'userId': userId,
       'title': title,
       'exercises': exercises.map((x) => x.toMap()).toList(),
       'date': date.millisecondsSinceEpoch,
@@ -44,6 +49,7 @@ class Workout {
   factory Workout.fromMap(Map<String, dynamic> map) {
     return Workout(
       id: map['id'] as String,
+      userId: map['userId'] as String,
       title: map['title'] as String,
       exercises: List<Exercise>.from(
         (map['exercises'] as List<int>).map<Exercise>(
@@ -61,7 +67,7 @@ class Workout {
 
   @override
   String toString() {
-    return 'Workout(id: $id, title: $title, exercises: $exercises, date: $date)';
+    return 'Workout(id: $id, userId: $userId, title: $title, exercises: $exercises, date: $date)';
   }
 
   @override
@@ -69,6 +75,7 @@ class Workout {
     if (identical(this, other)) return true;
 
     return other.id == id &&
+        other.userId == userId &&
         other.title == title &&
         listEquals(other.exercises, exercises) &&
         other.date == date;
@@ -76,6 +83,10 @@ class Workout {
 
   @override
   int get hashCode {
-    return id.hashCode ^ title.hashCode ^ exercises.hashCode ^ date.hashCode;
+    return id.hashCode ^
+        userId.hashCode ^
+        title.hashCode ^
+        exercises.hashCode ^
+        date.hashCode;
   }
 }

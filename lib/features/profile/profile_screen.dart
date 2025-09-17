@@ -1,9 +1,9 @@
 import 'package:fitness_app/common/primary_button.dart';
 import 'package:fitness_app/features/profile/providers/profile_controller.dart';
+import 'package:fitness_app/features/workout/providers/workout_controller.dart';
 import 'package:fitness_app/models/exercise.dart';
 import 'package:fitness_app/models/user_profile.dart';
 import 'package:fitness_app/models/workout_request.dart';
-import 'package:fitness_app/service/gemini_service.dart';
 import 'package:fitness_app/utility/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -118,20 +118,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       selectedEquipment,
     );
 
-    final workoutRequest = WorkoutRequest(
-      level: selectedLevel.name,
-      goal: selectedGoal.name,
-      equipments: selectedEquipment,
-      height: parsedHeight,
-      weight: parsedWeight,
-      age: parseAge,
-    );
     if (success) {
-      await GeminiService.generateWorkout(workoutRequest);
+      final workoutRequest = WorkoutRequest(
+        level: selectedLevel.name,
+        goal: selectedGoal.name,
+        equipments: selectedEquipment,
+        height: parsedHeight,
+        weight: parsedWeight,
+        age: parseAge,
+      );
+
+      final workoutController = ref.read(workoutControllerProvider.notifier);
+      final workoutSuccess = await workoutController.generateAndSaveWorkout(
+        workoutRequest,
+      );
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Profile created successfully')));
+        if (workoutSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Profile and workout created successfully')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Profile created, but workout generation failed'),
+            ),
+          );
+        }
         Navigator.pushReplacementNamed(context, '/home');
       }
     } else {

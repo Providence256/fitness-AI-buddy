@@ -81,7 +81,14 @@ class Exercise {
       duration: map['duration'] as int,
       level: Level.values.firstWhere((e) => e.name == map['level']),
       goal: Goal.values.firstWhere((e) => e.name == map['goal']),
-      equipments: [],
+      equipments: (map['equipments'] as List<dynamic>? ?? [])
+          .map(
+            (e) => Equipment.values.firstWhere(
+              (val) => val.name == e.toString(),
+              orElse: () => Equipment.none,
+            ),
+          )
+          .toList(),
       imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );
   }
