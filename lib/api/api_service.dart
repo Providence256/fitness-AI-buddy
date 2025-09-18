@@ -67,7 +67,7 @@ class ApiService {
   }
 
   // GET
-  static Future<ApiResponse<T>> _get<T>(
+  static Future<ApiResponse<T>> get<T>(
     String endPoint,
     T Function(dynamic json) parser,
   ) async {

@@ -1,8 +1,6 @@
-import 'dart:async';
-
 import 'package:fitness_app/data/workout_dummy_data.dart';
 import 'package:fitness_app/features/workout/providers/workout_controller.dart';
-import 'package:fitness_app/models/exercise.dart';
+import 'package:fitness_app/features/workout/start_workout_screen.dart';
 import 'package:fitness_app/models/workout.dart';
 import 'package:fitness_app/utility/constants/app_colors.dart';
 import 'package:fitness_app/widgets/error_state_widget.dart';
@@ -16,41 +14,7 @@ class WorkoutScreen extends StatefulWidget {
   State<WorkoutScreen> createState() => _WorkoutScreenState();
 }
 
-class _WorkoutScreenState extends State<WorkoutScreen>
-    with TickerProviderStateMixin {
-  bool _isWorkoutActive = false;
-  Workout? _currentWorkout;
-  int _currentExerciseIndex = 0;
-  Timer? _workoutTimer;
-  Timer? _restTimer;
-  int _workoutDuration = 0;
-  int _restDuration = 0;
-  bool _isResting = false;
-
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
-
-  @override
-  void initState() {
-    _pulseController = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _pulseAnimation = Tween(begin: 0.8, end: 1.2).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _workoutTimer?.cancel();
-    _restTimer?.cancel();
-    _pulseController.dispose();
-    super.dispose();
-  }
-
+class _WorkoutScreenState extends State<WorkoutScreen> {
   final workoutData = WorkoutDummyData().workoutTemplates;
   @override
   Widget build(BuildContext context) {
@@ -288,302 +252,302 @@ class _WorkoutScreenState extends State<WorkoutScreen>
     );
   }
 
-  Widget _buildActiveWorkout(Workout workout) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(workout.title),
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.pause)),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.stop))],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            children: [
-              _buildWorkoutProgress(),
-              SizedBox(height: 24),
-              _buildworkoutTimer(),
-              SizedBox(height: 24),
-              Expanded(
-                child: _isResting
-                    ? _buildRestScreen()
-                    : _buildCurrentExercise(workoutData[0].exercises[0]),
-              ),
-              _buildWorkoutControls(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildActiveWorkout(Workout workout) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text(workout.title),
+  //       leading: IconButton(onPressed: () {}, icon: Icon(Icons.pause)),
+  //       actions: [IconButton(onPressed: () {}, icon: Icon(Icons.stop))],
+  //     ),
+  //     body: SafeArea(
+  //       child: Padding(
+  //         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+  //         child: Column(
+  //           children: [
+  //             _buildWorkoutProgress(),
+  //             SizedBox(height: 24),
+  //             _buildworkoutTimer(),
+  //             SizedBox(height: 24),
+  //             Expanded(
+  //               child: _isResting
+  //                   ? _buildRestScreen()
+  //                   : _buildCurrentExercise(workoutData[0].exercises[0]),
+  //             ),
+  //             _buildWorkoutControls(),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildWorkoutProgress() {
-    final progress = (0 + 1) / workoutData[0].exercises.length;
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Exercise ${0 + 1} of ${workoutData[0].exercises.length} of ${workoutData[0].exercises.length}',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            Text(
-              '${(progress * 100).round()}%',
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                color: AppColors.primaryBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        LinearProgressIndicator(
-          value: progress,
-          backgroundColor: AppColors.textSecondary.withValues(alpha: 0.3),
-          valueColor: AlwaysStoppedAnimation(AppColors.primaryBlue),
-        ),
-      ],
-    );
-  }
+  // Widget _buildWorkoutProgress() {
+  //   final progress = (0 + 1) / workoutData[0].exercises.length;
+  //   return Column(
+  //     children: [
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: [
+  //           Text(
+  //             'Exercise ${0 + 1} of ${workoutData[0].exercises.length} of ${workoutData[0].exercises.length}',
+  //             style: Theme.of(context).textTheme.bodyLarge,
+  //           ),
+  //           Text(
+  //             '${(progress * 100).round()}%',
+  //             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+  //               color: AppColors.primaryBlue,
+  //               fontWeight: FontWeight.w600,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //       LinearProgressIndicator(
+  //         value: progress,
+  //         backgroundColor: AppColors.textSecondary.withValues(alpha: 0.3),
+  //         valueColor: AlwaysStoppedAnimation(AppColors.primaryBlue),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildworkoutTimer() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Column(
-            children: [
-              Icon(Icons.timer, color: AppColors.primaryBlue),
-              SizedBox(height: 4),
-              Text(
-                'Workout Time',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              Text(
-                '$_workoutDuration',
-                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  color: AppColors.primaryBlue,
-                ),
-              ),
-            ],
-          ),
-          if (_isResting) ...[
-            Column(
-              children: [
-                AnimatedBuilder(
-                  animation: _pulseAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _pulseAnimation.value,
-                      child: Icon(Icons.hourglass_bottom, color: Colors.orange),
-                    );
-                  },
-                ),
-                SizedBox(height: 4),
-                Text('Rest Time', style: Theme.of(context).textTheme.bodySmall),
-                Text(
-                  '$_restDuration',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.headlineMedium!.copyWith(color: Colors.white),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
+  // Widget _buildworkoutTimer() {
+  //   return Container(
+  //     padding: EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       color: Theme.of(context).cardTheme.color,
+  //       borderRadius: BorderRadius.circular(16),
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         Column(
+  //           children: [
+  //             Icon(Icons.timer, color: AppColors.primaryBlue),
+  //             SizedBox(height: 4),
+  //             Text(
+  //               'Workout Time',
+  //               style: Theme.of(context).textTheme.bodySmall,
+  //             ),
+  //             Text(
+  //               '$_workoutDuration',
+  //               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+  //                 color: AppColors.primaryBlue,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         if (_isResting) ...[
+  //           Column(
+  //             children: [
+  //               AnimatedBuilder(
+  //                 animation: _pulseAnimation,
+  //                 builder: (context, child) {
+  //                   return Transform.scale(
+  //                     scale: _pulseAnimation.value,
+  //                     child: Icon(Icons.hourglass_bottom, color: Colors.orange),
+  //                   );
+  //                 },
+  //               ),
+  //               SizedBox(height: 4),
+  //               Text('Rest Time', style: Theme.of(context).textTheme.bodySmall),
+  //               Text(
+  //                 '$_restDuration',
+  //                 style: Theme.of(
+  //                   context,
+  //                 ).textTheme.headlineMedium!.copyWith(color: Colors.white),
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildCurrentExercise(Exercise exercice) {
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            children: [
-              Icon(Icons.fitness_center, color: Colors.white, size: 48),
-              Text(
-                exercice.name,
-                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                'Set 2 of ${exercice.sets}',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge!.copyWith(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
+  // Widget _buildCurrentExercise(Exercise exercice) {
+  //   return Column(
+  //     children: [
+  //       Container(
+  //         width: double.infinity,
+  //         padding: EdgeInsets.all(24),
+  //         decoration: BoxDecoration(
+  //           gradient: LinearGradient(
+  //             colors: [AppColors.gradientStart, AppColors.gradientEnd],
+  //           ),
+  //           borderRadius: BorderRadius.circular(20),
+  //         ),
+  //         child: Column(
+  //           children: [
+  //             Icon(Icons.fitness_center, color: Colors.white, size: 48),
+  //             Text(
+  //               exercice.name,
+  //               style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+  //                 color: Colors.white,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //               textAlign: TextAlign.center,
+  //             ),
+  //             Text(
+  //               'Set 2 of ${exercice.sets}',
+  //               style: Theme.of(
+  //                 context,
+  //               ).textTheme.bodyLarge!.copyWith(color: Colors.white),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
 
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardTheme.color,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  'Target',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w600),
-                ),
-                Row(
-                  children: [
-                    _buildTargetInfo('Reps', '${exercice.reps}', Icons.repeat),
-                    if (exercice.duration > 0)
-                      _buildTargetInfo(
-                        'Duration',
-                        '${exercice.duration}s',
-                        Icons.timer,
-                      ),
-                  ],
-                ),
-                Text(
-                  'Ready when you are!',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  'Tap "Compelete Set" when finished',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  //       Expanded(
+  //         child: Container(
+  //           width: double.infinity,
+  //           padding: EdgeInsets.all(20),
+  //           decoration: BoxDecoration(
+  //             color: Theme.of(context).cardTheme.color,
+  //             borderRadius: BorderRadius.circular(16),
+  //           ),
+  //           child: Column(
+  //             children: [
+  //               Text(
+  //                 'Target',
+  //                 style: Theme.of(
+  //                   context,
+  //                 ).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w600),
+  //               ),
+  //               Row(
+  //                 children: [
+  //                   _buildTargetInfo('Reps', '${exercice.reps}', Icons.repeat),
+  //                   if (exercice.duration > 0)
+  //                     _buildTargetInfo(
+  //                       'Duration',
+  //                       '${exercice.duration}s',
+  //                       Icons.timer,
+  //                     ),
+  //                 ],
+  //               ),
+  //               Text(
+  //                 'Ready when you are!',
+  //                 style: Theme.of(context).textTheme.bodyLarge,
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //               Text(
+  //                 'Tap "Compelete Set" when finished',
+  //                 style: Theme.of(context).textTheme.bodyMedium,
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildTargetInfo(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: AppColors.primaryBlue),
-        Text(value, style: Theme.of(context).textTheme.headlineMedium),
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
-      ],
-    );
-  }
+  // Widget _buildTargetInfo(String label, String value, IconData icon) {
+  //   return Column(
+  //     children: [
+  //       Icon(icon, color: AppColors.primaryBlue),
+  //       Text(value, style: Theme.of(context).textTheme.headlineMedium),
+  //       Text(label, style: Theme.of(context).textTheme.bodyMedium),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildWorkoutControls() {
-    return Padding(
-      padding: EdgeInsets.only(top: 16),
-      child: Row(
-        spacing: 16,
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text('Previous'),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: ElevatedButton(
-              onPressed: () {},
-              child: Text('Complete Set'),
-            ),
-          ),
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text('Skip'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildWorkoutControls() {
+  //   return Padding(
+  //     padding: EdgeInsets.only(top: 16),
+  //     child: Row(
+  //       spacing: 16,
+  //       children: [
+  //         Expanded(
+  //           child: OutlinedButton(
+  //             onPressed: () {},
+  //             style: OutlinedButton.styleFrom(
+  //               padding: EdgeInsets.symmetric(vertical: 16),
+  //             ),
+  //             child: Text('Previous'),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           flex: 2,
+  //           child: ElevatedButton(
+  //             onPressed: () {},
+  //             child: Text('Complete Set'),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: OutlinedButton(
+  //             onPressed: () {},
+  //             style: OutlinedButton.styleFrom(
+  //               padding: EdgeInsets.symmetric(vertical: 16),
+  //             ),
+  //             child: Text('Skip'),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildRestScreen() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.orange.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _pulseAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _pulseAnimation.value,
-                child: Icon(
-                  Icons.hourglass_bottom,
-                  color: Colors.orange,
-                  size: 48,
-                ),
-              );
-            },
-          ),
-          SizedBox(height: 24),
-          Text(
-            'Rest Time',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium!.copyWith(color: Colors.orange),
-          ),
-          SizedBox(height: 8),
-          Text(
-            '$_restDuration',
-            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-              fontSize: 36,
-              color: Colors.orange,
-            ),
-          ),
-          SizedBox(height: 24),
-          Text(
-            'Take a break and prepare for next set',
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              side: BorderSide(color: Colors.orange),
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-            ),
-            child: Text('Skip Rest'),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildRestScreen() {
+  //   return Container(
+  //     width: double.infinity,
+  //     padding: EdgeInsets.all(24),
+  //     decoration: BoxDecoration(
+  //       color: Colors.orange.withValues(alpha: 0.1),
+  //       borderRadius: BorderRadius.circular(20),
+  //       border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+  //     ),
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         AnimatedBuilder(
+  //           animation: _pulseAnimation,
+  //           builder: (context, child) {
+  //             return Transform.scale(
+  //               scale: _pulseAnimation.value,
+  //               child: Icon(
+  //                 Icons.hourglass_bottom,
+  //                 color: Colors.orange,
+  //                 size: 48,
+  //               ),
+  //             );
+  //           },
+  //         ),
+  //         SizedBox(height: 24),
+  //         Text(
+  //           'Rest Time',
+  //           style: Theme.of(
+  //             context,
+  //           ).textTheme.headlineMedium!.copyWith(color: Colors.orange),
+  //         ),
+  //         SizedBox(height: 8),
+  //         Text(
+  //           '$_restDuration',
+  //           style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+  //             fontSize: 36,
+  //             color: Colors.orange,
+  //           ),
+  //         ),
+  //         SizedBox(height: 24),
+  //         Text(
+  //           'Take a break and prepare for next set',
+  //           style: Theme.of(context).textTheme.bodyLarge,
+  //           textAlign: TextAlign.center,
+  //         ),
+  //         SizedBox(height: 32),
+  //         ElevatedButton(
+  //           onPressed: () {},
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: Colors.orange,
+  //             side: BorderSide(color: Colors.orange),
+  //             padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+  //           ),
+  //           child: Text('Skip Rest'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _startWorkout(Workout workout) {
     if (workout.exercises.isEmpty) {
@@ -593,6 +557,11 @@ class _WorkoutScreenState extends State<WorkoutScreen>
           action: SnackBarAction(label: 'Add Exercises', onPressed: () {}),
         ),
       );
+      return;
     }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (ctx) => StartWorkoutScreen(workout: workout)),
+    );
   }
 }
