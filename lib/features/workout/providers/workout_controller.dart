@@ -36,7 +36,6 @@ class WorkoutController extends StateNotifier<WorkoutState> {
             StackTrace.current,
           ),
         );
-        print('the error is $state');
         return false;
       }
 
@@ -54,7 +53,6 @@ class WorkoutController extends StateNotifier<WorkoutState> {
       return true;
     } catch (e, stackTrace) {
       state = state.copyWith(workouts: AsyncValue.error(e, stackTrace));
-
       return false;
     }
   }

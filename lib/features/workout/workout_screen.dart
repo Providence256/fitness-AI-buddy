@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:fitness_app/data/workout_dummy_data.dart';
+import 'package:fitness_app/features/workout/providers/workout_controller.dart';
 import 'package:fitness_app/models/exercise.dart';
 import 'package:fitness_app/models/workout.dart';
 import 'package:fitness_app/utility/constants/app_colors.dart';
+import 'package:fitness_app/widgets/error_state_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({super.key});
@@ -128,22 +131,33 @@ class _WorkoutScreenState extends State<WorkoutScreen>
   }
 
   Widget _buildWorkoutTemplates() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Workout Templates',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: workoutData.length,
-          itemBuilder: (context, index) {
-            return _buildWorkoutCard(workoutData[index]);
+    return Consumer(
+      builder: (context, ref, child) {
+        final workoutController = ref.read(workoutControllerProvider);
+        return workoutController.workouts.when(
+          data: (workouts) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Workout Templates',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: workouts.length,
+                  itemBuilder: (context, index) {
+                    return _buildWorkoutCard(workouts[index]);
+                  },
+                ),
+              ],
+            );
           },
-        ),
-      ],
+          error: (error, stackTrace) => ErrorStateWidget(error: error),
+          loading: () => Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 

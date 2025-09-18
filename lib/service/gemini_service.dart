@@ -28,15 +28,12 @@ class GeminiService {
 
       final response = await instance.prompt(parts: [Part.text(prompt)]);
 
-      print('genereted workout response is ${response!.output}');
-
       if (response!.output != null) {
         return _workoutResponse(response.output!);
       }
 
       return null;
     } catch (e) {
-      print('generated error is $e');
       return null;
     }
   }
@@ -80,16 +77,11 @@ class GeminiService {
 
     final dynamic decoded = jsonDecode(cleaned);
 
-    print('decoded is $decoded');
-
     if (decoded is List) {
-      print('is List ${decoded.map((e) => Workout.fromMap(e)).toList()}');
       return decoded.map((e) => Workout.fromMap(e)).toList();
     } else if (decoded is Map<String, dynamic>) {
-      print('is Map : ${Workout.fromMap(decoded)}');
       return [Workout.fromMap(decoded)];
     } else {
-      print('the error is here don\'t look further');
       throw Exception('Unexpected workout response format');
     }
   }

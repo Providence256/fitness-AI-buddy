@@ -52,12 +52,33 @@ class Workout {
       userId: map['userId'] as String,
       title: map['title'] as String,
       exercises: List<Exercise>.from(
-        (map['exercises'] as List<int>).map<Exercise>(
+        (map['exercises'] as List<dynamic>).map<Exercise>(
           (x) => Exercise.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      date: _parseDate(map['date']),
     );
+  }
+
+  // Helper method to parse date - add this to the Workout class
+  static DateTime _parseDate(dynamic value) {
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    }
+    if (value is String) {
+      // Try parsing as ISO string first
+      try {
+        return DateTime.parse(value);
+      } catch (e) {
+        // If that fails, try parsing as milliseconds
+        final milliseconds = int.tryParse(value);
+        if (milliseconds != null) {
+          return DateTime.fromMillisecondsSinceEpoch(milliseconds);
+        }
+      }
+    }
+    // Fallback to current time
+    return DateTime.now();
   }
 
   String toJson() => json.encode(toMap());

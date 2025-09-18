@@ -75,12 +75,21 @@ class Exercise {
     return Exercise(
       id: map['id'] as String,
       name: map['name'] as String,
-      category: Category.values.firstWhere((e) => e.name == map['category']),
-      sets: map['sets'] as int,
-      reps: map['reps'] as int,
-      duration: map['duration'] as int,
-      level: Level.values.firstWhere((e) => e.name == map['level']),
-      goal: Goal.values.firstWhere((e) => e.name == map['goal']),
+      category: Category.values.firstWhere(
+        (e) => e.name == map['category'].toString(),
+        orElse: () => Category.chest, // fallback
+      ),
+      sets: _parseToInt(map['sets']),
+      reps: _parseToInt(map['reps']),
+      duration: _parseToInt(map['duration']),
+      level: Level.values.firstWhere(
+        (e) => e.name == map['level'].toString(),
+        orElse: () => Level.beginner, // fallback
+      ),
+      goal: Goal.values.firstWhere(
+        (e) => e.name == map['goal'].toString(),
+        orElse: () => Goal.gainMuscle, // fallback
+      ),
       equipments: (map['equipments'] as List<dynamic>? ?? [])
           .map(
             (e) => Equipment.values.firstWhere(
@@ -91,6 +100,13 @@ class Exercise {
           .toList(),
       imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
     );
+  }
+
+  // Helper method to parse string or int to int - add this to the Exercise class
+  static int _parseToInt(dynamic value) {
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
   }
 
   String toJson() => json.encode(toMap());
